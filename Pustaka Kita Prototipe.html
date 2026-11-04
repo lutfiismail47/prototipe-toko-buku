@@ -1,0 +1,2008 @@
+<!doctype html>
+<html>
+  <head>
+    <meta charset="utf8" />
+    <meta
+      name="viewport"
+      content="width=device-width,initial-scale=1,viewport-fit=cover"
+    />
+    <style>
+      :root {
+        color-scheme: light;
+        box-sizing: border-box;
+        padding-top: env(safe-area-inset-top, 0px);
+        padding-bottom: env(safe-area-inset-bottom, 0px);
+      }
+      html {
+        scroll-padding-top: env(safe-area-inset-top, 0px);
+      }
+      body {
+        margin: 0;
+        padding: 0;
+        font:
+          14px -apple-system,
+          BlinkMacSystemFont,
+          sans-serif;
+        background: #fff;
+        color: #000;
+      }
+      img {
+        max-width: 100%;
+      }
+      [hidden]:not([hidden="until-found" i]) {
+        display: none !important;
+      }
+    </style>
+  </head>
+  <body>
+    <title>Pustaka Kita Prototipe</title>
+    <meta name="claude:viewport-fit-sides" content="cover" />
+    <link
+      rel="stylesheet"
+      href="https://fonts.googleapis.com/css2?family=IBM+Plex+Mono:wght@400;500&family=IBM+Plex+Sans:wght@400;500;600&family=Patrick+Hand&display=swap"
+    />
+    <style>
+      /* Layout: wireframe abu-abu, satu aksen biru hanya untuk elemen yang bisa diklik. Mode Pelanggan (header + konten) dan Admin (sidebar + konten). */
+      :root {
+        --bg: #eef0f3;
+        --surface: #ffffff;
+        --fill: #dfe3ea;
+        --line: #8f98a6;
+        --line-soft: #c9ced8;
+        --fg: #1b2230;
+        --muted: #5f6b7c;
+        --accent: #2f5bea;
+        --accent-fg: #ffffff;
+        --ok: #2f7d4f;
+        --ok-bg: #dff1e6;
+        --warn: #9a5b00;
+        --warn-bg: #fbebc8;
+        --info: #2f5bea;
+        --info-bg: #dfe7fd;
+        --font-display: "Patrick Hand", "Comic Sans MS", cursive;
+        --font-body:
+          "IBM Plex Sans", system-ui, -apple-system, "Segoe UI", sans-serif;
+        --font-mono: "IBM Plex Mono", ui-monospace, Menlo, monospace;
+      }
+      @media (prefers-color-scheme: dark) {
+        :root:not([data-theme="light"]) {
+          --bg: #14181f;
+          --surface: #1d232d;
+          --fill: #2b3340;
+          --line: #6f7a8a;
+          --line-soft: #363f4d;
+          --fg: #e6e9ef;
+          --muted: #9aa4b4;
+          --accent: #7b9bff;
+          --accent-fg: #101522;
+          --ok: #6fd09a;
+          --ok-bg: #1d3a2a;
+          --warn: #f0b95a;
+          --warn-bg: #42330f;
+          --info: #7b9bff;
+          --info-bg: #222e55;
+          color-scheme: dark;
+        }
+      }
+      :root[data-theme="dark"] {
+        --bg: #14181f;
+        --surface: #1d232d;
+        --fill: #2b3340;
+        --line: #6f7a8a;
+        --line-soft: #363f4d;
+        --fg: #e6e9ef;
+        --muted: #9aa4b4;
+        --accent: #7b9bff;
+        --accent-fg: #101522;
+        --ok: #6fd09a;
+        --ok-bg: #1d3a2a;
+        --warn: #f0b95a;
+        --warn-bg: #42330f;
+        --info: #7b9bff;
+        --info-bg: #222e55;
+        color-scheme: dark;
+      }
+
+      * {
+        box-sizing: border-box;
+      }
+      body {
+        background: var(--bg);
+        color: var(--fg);
+        font: 14px/1.5 var(--font-body);
+        padding-left: max(16px, env(safe-area-inset-left, 0px));
+        padding-right: max(16px, env(safe-area-inset-right, 0px));
+        padding-block: 0 40px;
+      }
+      body::before {
+        content: "";
+        position: fixed;
+        inset: 0 0 auto;
+        height: env(safe-area-inset-top, 0px);
+        z-index: 30;
+        background: var(--fg);
+      }
+      h1,
+      h2,
+      h3 {
+        font-family: var(--font-display);
+        font-weight: 400;
+        margin: 0;
+        line-height: 1.15;
+        text-wrap: balance;
+      }
+      h1 {
+        font-size: 30px;
+      }
+      h2 {
+        font-size: 24px;
+      }
+      h3 {
+        font-size: 19px;
+      }
+      p {
+        margin: 0;
+      }
+      a {
+        color: inherit;
+      }
+      button,
+      input,
+      select,
+      textarea {
+        font: inherit;
+        color: inherit;
+      }
+      :focus-visible {
+        outline: 2px solid var(--accent);
+        outline-offset: 2px;
+      }
+
+      .proto {
+        position: sticky;
+        top: env(safe-area-inset-top, 0px);
+        z-index: 20;
+        display: flex;
+        gap: 12px;
+        align-items: center;
+        justify-content: space-between;
+        flex-wrap: wrap;
+        background: var(--fg);
+        color: var(--bg);
+        padding: 8px 14px;
+        margin: 0 calc(-1 * max(16px, env(safe-area-inset-left, 0px))) 18px;
+        font-family: var(--font-mono);
+        font-size: 12px;
+      }
+      .proto .seg {
+        display: flex;
+        border: 1px solid var(--bg);
+      }
+      .proto .seg button {
+        background: transparent;
+        color: var(--bg);
+        border: 0;
+        padding: 4px 12px;
+        cursor: pointer;
+        font-family: var(--font-mono);
+        font-size: 12px;
+      }
+      .proto .seg button[aria-pressed="true"] {
+        background: var(--bg);
+        color: var(--fg);
+      }
+      .proto .seg button:focus-visible {
+        outline-color: var(--bg);
+      }
+      .shell {
+        max-width: 1120px;
+        margin: 0 auto;
+      }
+
+      /* kontrol */
+      .btn {
+        display: inline-flex;
+        align-items: center;
+        justify-content: center;
+        gap: 6px;
+        border: 1.5px solid var(--fg);
+        background: var(--surface);
+        padding: 6px 14px;
+        cursor: pointer;
+        min-height: 34px;
+        text-decoration: none;
+        font-weight: 500;
+      }
+      .btn:hover {
+        background: var(--fill);
+      }
+      .btn.primary {
+        background: var(--accent);
+        border-color: var(--accent);
+        color: var(--accent-fg);
+      }
+      .btn.primary:hover {
+        filter: brightness(1.08);
+      }
+      .btn.sm {
+        min-height: 28px;
+        padding: 2px 10px;
+        font-size: 13px;
+      }
+      .btn.danger {
+        border-color: var(--warn);
+        color: var(--warn);
+      }
+      .btn:disabled {
+        opacity: 0.45;
+        cursor: not-allowed;
+      }
+      .link {
+        background: none;
+        border: 0;
+        padding: 0;
+        color: var(--accent);
+        text-decoration: underline;
+        cursor: pointer;
+      }
+      input,
+      select,
+      textarea {
+        width: 100%;
+        border: 1.5px solid var(--line);
+        background: var(--surface);
+        padding: 7px 10px;
+        min-height: 36px;
+        border-radius: 0;
+      }
+      textarea {
+        min-height: 90px;
+        resize: vertical;
+      }
+      label {
+        display: block;
+        font-size: 12px;
+        font-family: var(--font-mono);
+        color: var(--muted);
+        margin-bottom: 3px;
+        text-transform: uppercase;
+        letter-spacing: 0.04em;
+      }
+      .field {
+        display: flex;
+        flex-direction: column;
+        min-width: 0;
+      }
+      .row {
+        display: grid;
+        grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+        gap: 12px;
+      }
+      .box {
+        background: var(--surface);
+        border: 1.5px solid var(--line);
+        padding: 16px;
+      }
+      .dash {
+        border-style: dashed;
+      }
+      .muted {
+        color: var(--muted);
+      }
+      .mono {
+        font-family: var(--font-mono);
+      }
+      .price {
+        font-weight: 600;
+        font-variant-numeric: tabular-nums;
+      }
+      .stack {
+        display: flex;
+        flex-direction: column;
+        gap: 14px;
+      }
+      .between {
+        display: flex;
+        justify-content: space-between;
+        align-items: center;
+        gap: 12px;
+        flex-wrap: wrap;
+      }
+      .wrapflex {
+        display: flex;
+        gap: 8px;
+        flex-wrap: wrap;
+        align-items: center;
+      }
+      .screen-tag {
+        margin-top: 28px;
+        font-family: var(--font-mono);
+        font-size: 11px;
+        color: var(--muted);
+        border-top: 1px dashed var(--line-soft);
+        padding-top: 8px;
+      }
+      .note {
+        font-size: 12px;
+        color: var(--muted);
+        font-family: var(--font-mono);
+      }
+
+      /* sampul */
+      .cover {
+        position: relative;
+        aspect-ratio: 3/4;
+        border: 1.5px solid var(--line);
+        width: 100%;
+        background:
+          linear-gradient(
+            to top right,
+            transparent calc(50% - 0.75px),
+            var(--line) 50%,
+            transparent calc(50% + 0.75px)
+          ),
+          linear-gradient(
+            to bottom right,
+            transparent calc(50% - 0.75px),
+            var(--line) 50%,
+            transparent calc(50% + 0.75px)
+          ),
+          var(--fill);
+      }
+      .cover span {
+        position: absolute;
+        left: 6px;
+        right: 6px;
+        bottom: 6px;
+        background: var(--surface);
+        border: 1px solid var(--line);
+        padding: 2px 5px;
+        font-size: 11px;
+        line-height: 1.25;
+      }
+      .cover.mini {
+        width: 34px;
+        aspect-ratio: 3/4;
+      }
+      .cover.mini span {
+        display: none;
+      }
+
+      /* header pelanggan */
+      .top {
+        background: var(--surface);
+        border: 1.5px solid var(--line);
+        padding: 12px 16px;
+        display: flex;
+        flex-wrap: wrap;
+        gap: 12px 20px;
+        align-items: center;
+        margin-bottom: 20px;
+      }
+      .logo {
+        font-family: var(--font-display);
+        font-size: 26px;
+        cursor: pointer;
+        background: none;
+        border: 0;
+        padding: 0;
+      }
+      .logo em {
+        font-style: normal;
+        border: 1.5px solid var(--fg);
+        padding: 0 6px;
+        margin-right: 6px;
+      }
+      .nav {
+        display: flex;
+        gap: 4px;
+        flex-wrap: wrap;
+      }
+      .nav button {
+        background: none;
+        border: 0;
+        padding: 4px 10px;
+        cursor: pointer;
+        border-bottom: 2px solid transparent;
+      }
+      .nav button[aria-current="page"] {
+        border-bottom-color: var(--fg);
+        font-weight: 600;
+      }
+      .nav button:hover {
+        background: var(--fill);
+      }
+      .search {
+        display: flex;
+        flex: 1 1 220px;
+        min-width: 0;
+      }
+      .search input {
+        border-right: 0;
+      }
+      .userbar {
+        display: flex;
+        gap: 8px;
+        align-items: center;
+        flex-wrap: wrap;
+        margin-left: auto;
+      }
+      .count {
+        display: inline-block;
+        min-width: 20px;
+        text-align: center;
+        background: var(--fg);
+        color: var(--bg);
+        border-radius: 10px;
+        font-size: 12px;
+        padding: 0 6px;
+      }
+
+      /* beranda */
+      .banner {
+        border: 1.5px solid var(--line);
+        min-height: 210px;
+        display: grid;
+        place-items: center;
+        padding: 24px;
+        text-align: center;
+        position: relative;
+        background:
+          linear-gradient(
+            to top right,
+            transparent calc(50% - 0.75px),
+            var(--line-soft) 50%,
+            transparent calc(50% + 0.75px)
+          ),
+          linear-gradient(
+            to bottom right,
+            transparent calc(50% - 0.75px),
+            var(--line-soft) 50%,
+            transparent calc(50% + 0.75px)
+          ),
+          var(--fill);
+      }
+      .banner .txt {
+        background: var(--surface);
+        border: 1.5px solid var(--line);
+        padding: 14px 22px;
+        max-width: 480px;
+      }
+      .dots {
+        display: flex;
+        gap: 6px;
+        justify-content: center;
+        margin-top: 8px;
+      }
+      .dots button {
+        width: 12px;
+        height: 12px;
+        border-radius: 50%;
+        border: 1.5px solid var(--fg);
+        background: var(--surface);
+        padding: 0;
+        cursor: pointer;
+      }
+      .dots button[aria-current="true"] {
+        background: var(--fg);
+      }
+      .chips {
+        display: flex;
+        gap: 8px;
+        flex-wrap: wrap;
+      }
+      .chip {
+        border: 1.5px solid var(--line);
+        background: var(--surface);
+        padding: 3px 12px;
+        cursor: pointer;
+        border-radius: 16px;
+      }
+      .chip:hover,
+      .chip[aria-pressed="true"] {
+        background: var(--fg);
+        color: var(--bg);
+        border-color: var(--fg);
+      }
+      .grid-books {
+        display: grid;
+        grid-template-columns: repeat(auto-fill, minmax(150px, 1fr));
+        gap: 16px;
+      }
+      .card {
+        display: flex;
+        flex-direction: column;
+        gap: 6px;
+        cursor: pointer;
+        min-width: 0;
+      }
+      .card .t {
+        font-weight: 600;
+        line-height: 1.3;
+      }
+      .card .a {
+        font-size: 12.5px;
+        color: var(--muted);
+      }
+      .card .btn {
+        margin-top: 4px;
+      }
+      .rank {
+        font-family: var(--font-display);
+        font-size: 22px;
+        line-height: 1;
+      }
+      .sec-head {
+        display: flex;
+        justify-content: space-between;
+        align-items: baseline;
+        gap: 12px;
+        margin: 26px 0 12px;
+      }
+
+      /* katalog */
+      .cat-layout {
+        display: grid;
+        grid-template-columns: 230px minmax(0, 1fr);
+        gap: 20px;
+        align-items: start;
+      }
+      @media (max-width: 760px) {
+        .cat-layout {
+          grid-template-columns: 1fr;
+        }
+      }
+      .check {
+        display: flex;
+        gap: 8px;
+        align-items: center;
+        font-size: 14px;
+        text-transform: none;
+        letter-spacing: 0;
+        font-family: var(--font-body);
+        color: var(--fg);
+      }
+      .check input {
+        width: auto;
+        min-height: 0;
+      }
+
+      /* detail */
+      .detail {
+        display: grid;
+        grid-template-columns: minmax(0, 280px) minmax(0, 1fr);
+        gap: 28px;
+      }
+      @media (max-width: 700px) {
+        .detail {
+          grid-template-columns: 1fr;
+        }
+        .detail .cover {
+          max-width: 240px;
+        }
+      }
+      .meta {
+        display: grid;
+        grid-template-columns: auto 1fr;
+        gap: 4px 16px;
+        font-size: 13.5px;
+      }
+      .meta dt {
+        color: var(--muted);
+        font-family: var(--font-mono);
+        font-size: 12px;
+        padding-top: 1px;
+      }
+      .meta dd {
+        margin: 0;
+      }
+      .qty {
+        display: inline-flex;
+        border: 1.5px solid var(--fg);
+      }
+      .qty button {
+        width: 32px;
+        border: 0;
+        background: var(--surface);
+        cursor: pointer;
+        font-size: 16px;
+      }
+      .qty button:hover {
+        background: var(--fill);
+      }
+      .qty output {
+        min-width: 36px;
+        display: grid;
+        place-items: center;
+        border-inline: 1.5px solid var(--fg);
+        font-variant-numeric: tabular-nums;
+      }
+
+      /* tabel */
+      .tblwrap {
+        overflow-x: auto;
+        border: 1.5px solid var(--line);
+        background: var(--surface);
+      }
+      table {
+        border-collapse: collapse;
+        width: 100%;
+        min-width: 560px;
+      }
+      th {
+        font-family: var(--font-mono);
+        font-size: 11.5px;
+        text-transform: uppercase;
+        letter-spacing: 0.05em;
+        text-align: left;
+        color: var(--muted);
+        background: var(--fill);
+        padding: 8px 12px;
+        white-space: nowrap;
+      }
+      td {
+        padding: 9px 12px;
+        border-top: 1px solid var(--line-soft);
+        vertical-align: middle;
+      }
+      td.num,
+      th.num {
+        text-align: right;
+        font-variant-numeric: tabular-nums;
+      }
+      td .wrapflex {
+        flex-wrap: nowrap;
+      }
+      .badge {
+        display: inline-block;
+        padding: 1px 10px;
+        border: 1.5px solid currentColor;
+        font-size: 12px;
+        font-weight: 600;
+        white-space: nowrap;
+      }
+      .b-Diproses {
+        color: var(--warn);
+        background: var(--warn-bg);
+      }
+      .b-Dikirim {
+        color: var(--info);
+        background: var(--info-bg);
+      }
+      .b-Selesai {
+        color: var(--ok);
+        background: var(--ok-bg);
+      }
+      .b-Aktif {
+        color: var(--ok);
+        background: var(--ok-bg);
+      }
+      .b-Nonaktif {
+        color: var(--muted);
+        background: var(--fill);
+      }
+      .b-low {
+        color: var(--warn);
+        background: var(--warn-bg);
+      }
+      .b-ok {
+        color: var(--ok);
+        background: var(--ok-bg);
+      }
+
+      /* checkout / keranjang */
+      .two {
+        display: grid;
+        grid-template-columns: minmax(0, 1.5fr) minmax(0, 1fr);
+        gap: 20px;
+        align-items: start;
+      }
+      @media (max-width: 760px) {
+        .two {
+          grid-template-columns: 1fr;
+        }
+      }
+      .sum {
+        display: flex;
+        justify-content: space-between;
+        gap: 12px;
+        padding: 3px 0;
+      }
+      .sum.total {
+        border-top: 1.5px solid var(--fg);
+        margin-top: 6px;
+        padding-top: 8px;
+        font-weight: 600;
+        font-size: 16px;
+      }
+      .radio {
+        display: flex;
+        gap: 8px;
+        align-items: center;
+        border: 1.5px solid var(--line);
+        padding: 8px 10px;
+        cursor: pointer;
+        text-transform: none;
+        letter-spacing: 0;
+        font-family: var(--font-body);
+        font-size: 14px;
+        color: var(--fg);
+        margin: 0;
+      }
+      .radio input {
+        width: auto;
+        min-height: 0;
+      }
+      .empty {
+        text-align: center;
+        padding: 40px 16px;
+        border: 1.5px dashed var(--line);
+      }
+      .authbox {
+        max-width: 420px;
+        margin: 20px auto;
+      }
+
+      /* admin */
+      .admin {
+        display: grid;
+        grid-template-columns: 200px minmax(0, 1fr);
+        gap: 20px;
+        align-items: start;
+      }
+      @media (max-width: 760px) {
+        .admin {
+          grid-template-columns: 1fr;
+        }
+      }
+      .side {
+        background: var(--surface);
+        border: 1.5px solid var(--line);
+        padding: 12px;
+        display: flex;
+        flex-direction: column;
+        gap: 2px;
+      }
+      @media (max-width: 760px) {
+        .side {
+          flex-direction: row;
+          flex-wrap: wrap;
+        }
+      }
+      .side .brand {
+        font-family: var(--font-display);
+        font-size: 22px;
+        padding: 2px 8px 10px;
+        width: 100%;
+      }
+      .side button {
+        text-align: left;
+        background: none;
+        border: 0;
+        padding: 7px 10px;
+        cursor: pointer;
+        border-left: 3px solid transparent;
+      }
+      .side button:hover {
+        background: var(--fill);
+      }
+      .side button[aria-current="page"] {
+        border-left-color: var(--fg);
+        background: var(--fill);
+        font-weight: 600;
+      }
+      .stats {
+        display: grid;
+        grid-template-columns: repeat(auto-fit, minmax(180px, 1fr));
+        gap: 14px;
+      }
+      .stat {
+        border: 1.5px solid var(--line);
+        background: var(--surface);
+        padding: 14px 16px;
+      }
+      .stat .k {
+        font-family: var(--font-mono);
+        font-size: 11.5px;
+        text-transform: uppercase;
+        letter-spacing: 0.05em;
+        color: var(--muted);
+      }
+      .stat .v {
+        font-family: var(--font-display);
+        font-size: 34px;
+        line-height: 1.1;
+        margin-top: 2px;
+        font-variant-numeric: tabular-nums;
+      }
+      .tabs {
+        display: flex;
+        gap: 0;
+        flex-wrap: wrap;
+      }
+      .tabs button {
+        border: 1.5px solid var(--line);
+        margin-right: -1.5px;
+        background: var(--surface);
+        padding: 5px 14px;
+        cursor: pointer;
+      }
+      .tabs button[aria-pressed="true"] {
+        background: var(--fg);
+        color: var(--bg);
+        border-color: var(--fg);
+      }
+      .toast {
+        position: fixed;
+        left: 50%;
+        transform: translateX(-50%);
+        bottom: calc(20px + env(safe-area-inset-bottom, 0px));
+        background: var(--fg);
+        color: var(--bg);
+        padding: 8px 16px;
+        z-index: 40;
+        font-size: 13px;
+        max-width: 90vw;
+      }
+      @media (prefers-reduced-motion: no-preference) {
+        .toast {
+          animation: pop 0.2s ease-out;
+        }
+        @keyframes pop {
+          from {
+            opacity: 0;
+            transform: translate(-50%, 8px);
+          }
+        }
+      }
+    </style>
+
+    <div id="app"></div>
+
+    <script>
+      const fmt = (n) => "Rp " + Number(n).toLocaleString("id-ID");
+      const esc = (s) =>
+        String(s ?? "").replace(
+          /[&<>"']/g,
+          (c) =>
+            ({
+              "&": "&amp;",
+              "<": "&lt;",
+              ">": "&gt;",
+              '"': "&quot;",
+              "'": "&#39;",
+            })[c],
+        );
+      const $ = (s) => document.querySelector(s);
+
+      const S = {
+        mode: "cust",
+        screen: "home",
+        id: null,
+        redirect: null,
+        user: null,
+        admin: false,
+        admScreen: "dash",
+        cart: [
+          { id: 1, qty: 1 },
+          { id: 5, qty: 2 },
+        ],
+        qty: 1,
+        banner: 0,
+        q: "",
+        cat: "",
+        sort: "baru",
+        onlyStock: false,
+        lastOrder: null,
+        toast: "",
+        editBook: null,
+        delBook: null,
+        bookQ: "",
+        editCat: null,
+        ordTab: "Semua",
+        custView: null,
+        cats: [
+          { id: 1, name: "Fiksi" },
+          { id: 2, name: "Anak" },
+          { id: 3, name: "Teknologi" },
+          { id: 4, name: "Kuliner" },
+          { id: 5, name: "Pengembangan Diri" },
+          { id: 6, name: "Sejarah" },
+          { id: 7, name: "Bisnis" },
+        ],
+        books: [
+          {
+            id: 1,
+            title: "Hujan di Kota Tua",
+            author: "Laras Pamungkas",
+            publisher: "Penerbit Lentera",
+            cat: "Fiksi",
+            price: 85000,
+            stock: 24,
+            year: 2026,
+            pages: 312,
+            isNew: true,
+            best: false,
+            syn: "Seorang arsiparis menemukan surat-surat yang tidak pernah dikirim di gudang stasiun lama, dan satu per satu membuka kisah penulisnya.",
+          },
+          {
+            id: 2,
+            title: "Rumus Pagi",
+            author: "Dimas Aryo",
+            publisher: "Gita Pustaka",
+            cat: "Pengembangan Diri",
+            price: 72000,
+            stock: 3,
+            year: 2025,
+            pages: 224,
+            isNew: false,
+            best: true,
+            syn: "Kumpulan kebiasaan kecil di satu jam pertama hari yang bisa dicoba tanpa alat apa pun, lengkap dengan lembar catatan harian.",
+          },
+          {
+            id: 3,
+            title: "Dapur Nusantara",
+            author: "Wulan Sekar",
+            publisher: "Mitra Aksara",
+            cat: "Kuliner",
+            price: 120000,
+            stock: 15,
+            year: 2025,
+            pages: 288,
+            isNew: false,
+            best: true,
+            syn: "Seratus resep rumahan dari berbagai daerah dengan takaran jelas, foto langkah, dan catatan pengganti bahan.",
+          },
+          {
+            id: 4,
+            title: "Algoritma Tanpa Drama",
+            author: "Bagas Prakoso",
+            publisher: "Penerbit Lentera",
+            cat: "Teknologi",
+            price: 98000,
+            stock: 8,
+            year: 2026,
+            pages: 340,
+            isNew: true,
+            best: false,
+            syn: "Pengantar struktur data dan algoritma dengan contoh sehari-hari dan latihan soal bertingkat.",
+          },
+          {
+            id: 5,
+            title: "Peta Bintang Kecil",
+            author: "Nirmala Dewi",
+            publisher: "Gita Pustaka",
+            cat: "Anak",
+            price: 55000,
+            stock: 40,
+            year: 2024,
+            pages: 64,
+            isNew: false,
+            best: true,
+            syn: "Buku cerita bergambar tentang seorang anak yang belajar mengenali rasi bintang dari atap rumah neneknya.",
+          },
+          {
+            id: 6,
+            title: "Sejarah Pasar Rempah",
+            author: "Hendra Kusuma",
+            publisher: "Mitra Aksara",
+            cat: "Sejarah",
+            price: 110000,
+            stock: 0,
+            year: 2023,
+            pages: 420,
+            isNew: false,
+            best: false,
+            syn: "Penelusuran jalur dagang rempah dari pelabuhan kecil hingga kota besar, disusun dari catatan pelayaran dan arsip kota.",
+          },
+          {
+            id: 7,
+            title: "Surat untuk Januari",
+            author: "Laras Pamungkas",
+            publisher: "Penerbit Lentera",
+            cat: "Fiksi",
+            price: 79000,
+            stock: 12,
+            year: 2024,
+            pages: 256,
+            isNew: false,
+            best: true,
+            syn: "Novel tentang dua saudara yang berkomunikasi lewat surat selama satu tahun penuh setelah terpisah kota.",
+          },
+          {
+            id: 8,
+            title: "Akuntansi untuk Pemula",
+            author: "Rina Maharani",
+            publisher: "Gita Pustaka",
+            cat: "Bisnis",
+            price: 90000,
+            stock: 20,
+            year: 2026,
+            pages: 300,
+            isNew: true,
+            best: false,
+            syn: "Dasar pembukuan usaha kecil: jurnal, buku besar, dan laporan laba rugi dengan studi kasus warung dan toko online.",
+          },
+          {
+            id: 9,
+            title: "Kebun Atap Kota",
+            author: "Wulan Sekar",
+            publisher: "Mitra Aksara",
+            cat: "Pengembangan Diri",
+            price: 68000,
+            stock: 9,
+            year: 2026,
+            pages: 192,
+            isNew: true,
+            best: false,
+            syn: "Panduan menanam sayur di lahan sempit, dari memilih wadah sampai jadwal panen.",
+          },
+          {
+            id: 10,
+            title: "Pemrograman Web Dasar",
+            author: "Bagas Prakoso",
+            publisher: "Penerbit Lentera",
+            cat: "Teknologi",
+            price: 105000,
+            stock: 2,
+            year: 2025,
+            pages: 380,
+            isNew: false,
+            best: true,
+            syn: "HTML, CSS, dan JavaScript dari nol dengan sepuluh proyek kecil yang bisa langsung dibuka di browser.",
+          },
+        ],
+        customers: [
+          {
+            id: 1,
+            name: "Sari Wulandari",
+            email: "sari@contoh.id",
+            phone: "0812-1111-2222",
+            city: "Bandung",
+            active: true,
+          },
+          {
+            id: 2,
+            name: "Budi Santoso",
+            email: "budi@contoh.id",
+            phone: "0813-3333-4444",
+            city: "Surabaya",
+            active: true,
+          },
+          {
+            id: 3,
+            name: "Citra Anggraini",
+            email: "citra@contoh.id",
+            phone: "0857-5555-6666",
+            city: "Yogyakarta",
+            active: true,
+          },
+          {
+            id: 4,
+            name: "Dodi Prasetyo",
+            email: "dodi@contoh.id",
+            phone: "0821-7777-8888",
+            city: "Medan",
+            active: true,
+          },
+          {
+            id: 5,
+            name: "Eka Lestari",
+            email: "eka@contoh.id",
+            phone: "0896-9999-0000",
+            city: "Denpasar",
+            active: false,
+          },
+        ],
+        orders: [
+          {
+            id: "PK-1001",
+            cust: 1,
+            items: [
+              { id: 1, qty: 1 },
+              { id: 5, qty: 2 },
+            ],
+            ship: 15000,
+            status: "Selesai",
+            date: "12 Okt 2026",
+          },
+          {
+            id: "PK-1002",
+            cust: 2,
+            items: [{ id: 4, qty: 1 }],
+            ship: 18000,
+            status: "Dikirim",
+            date: "30 Okt 2026",
+          },
+          {
+            id: "PK-1003",
+            cust: 1,
+            items: [{ id: 3, qty: 1 }],
+            ship: 15000,
+            status: "Dikirim",
+            date: "1 Nov 2026",
+          },
+          {
+            id: "PK-1004",
+            cust: 3,
+            items: [
+              { id: 2, qty: 2 },
+              { id: 7, qty: 1 },
+            ],
+            ship: 12000,
+            status: "Diproses",
+            date: "3 Nov 2026",
+          },
+          {
+            id: "PK-1005",
+            cust: 4,
+            items: [{ id: 8, qty: 1 }],
+            ship: 18000,
+            status: "Diproses",
+            date: "4 Nov 2026",
+          },
+        ],
+      };
+      const STATUS = ["Diproses", "Dikirim", "Selesai"];
+      const book = (id) => S.books.find((b) => b.id === id);
+      const cust = (id) => S.customers.find((c) => c.id === id);
+      const bookTitle = (id) => book(id)?.title ?? "(buku dihapus)";
+      const orderSub = (o) =>
+        o.items.reduce((s, i) => s + (book(i.id)?.price || 0) * i.qty, 0);
+      const orderTotal = (o) => orderSub(o) + o.ship;
+      const cartCount = () => S.cart.reduce((s, i) => s + i.qty, 0);
+      const cartSub = () =>
+        S.cart.reduce((s, i) => s + book(i.id).price * i.qty, 0);
+      const stockBadge = (b) =>
+        b.stock === 0
+          ? '<span class="badge b-Nonaktif">Habis</span>'
+          : b.stock <= 5
+            ? `<span class="badge b-low">Sisa ${b.stock}</span>`
+            : `<span class="badge b-ok">Tersedia ${b.stock}</span>`;
+
+      function toast(msg) {
+        S.toast = msg;
+        render();
+        clearTimeout(toast.t);
+        toast.t = setTimeout(() => {
+          S.toast = "";
+          const t = $(".toast");
+          if (t) t.remove();
+        }, 2200);
+      }
+      function go(screen, id) {
+        S.screen = screen;
+        S.id = id ?? null;
+        if (screen === "detail") S.qty = 1;
+        render();
+        window.scrollTo(0, 0);
+      }
+      function tag(name) {
+        return `<div class="screen-tag">LAYAR · ${esc(name)}</div>`;
+      }
+
+      /* ---------- Pelanggan ---------- */
+      function cover(b, cls = "") {
+        return `<div class="cover ${cls}"><span>${esc(b.title)}</span></div>`;
+      }
+      function card(b, rank) {
+        return `<article class="card" data-act="detail" data-id="${b.id}" tabindex="0">
+    ${rank ? `<div class="rank">#${rank}</div>` : ""}
+    ${cover(b)}
+    <div class="t">${esc(b.title)}</div>
+    <div class="a">${esc(b.author)}</div>
+    <div class="price">${fmt(b.price)}</div>
+    <button class="btn sm" data-act="add" data-id="${b.id}" ${b.stock === 0 ? "disabled" : ""}>${b.stock === 0 ? "Stok habis" : "+ Keranjang"}</button>
+  </article>`;
+      }
+
+      function custHeader() {
+        const nav = [
+          ["home", "Beranda"],
+          ["catalog", "Katalog"],
+          ["contact", "Kontak & Tentang"],
+        ];
+        const cur = S.screen === "detail" ? "catalog" : S.screen;
+        return `<header class="top">
+    <button class="logo" data-act="go" data-to="home"><em>PK</em>Pustaka Kita</button>
+    <nav class="nav" aria-label="Menu utama">${nav.map(([k, l]) => `<button data-act="go" data-to="${k}" ${cur === k ? 'aria-current="page"' : ""}>${l}</button>`).join("")}</nav>
+    <form class="search" data-form="search" role="search">
+      <input id="hdr-q" aria-label="Cari buku" placeholder="Cari judul atau penulis" value="${esc(S.q)}">
+      <button class="btn" type="submit">Cari</button>
+    </form>
+    <div class="userbar">
+      <button class="btn" data-act="go" data-to="cart">Keranjang <span class="count">${cartCount()}</span></button>
+      ${
+        S.user
+          ? `<button class="btn" data-act="go" data-to="orders">Pesanan saya</button><span class="muted">Halo, ${esc(S.user.name.split(" ")[0])}</span><button class="link" data-act="logout">Keluar</button>`
+          : `<button class="btn" data-act="go" data-to="login">Masuk</button><button class="btn primary" data-act="go" data-to="register">Daftar</button>`
+      }
+    </div>
+  </header>`;
+      }
+
+      function scrHome() {
+        const banners = [
+          ["Diskon 20% Buku Fiksi", "Berlaku sampai 30 November"],
+          ["Gratis Ongkir", "Untuk pembelian di atas Rp 150.000"],
+          ["Buku Baru Bulan Ini", "Lihat terbitan terbaru"],
+        ];
+        const b = banners[S.banner];
+        const news = S.books.filter((x) => x.isNew).slice(0, 4);
+        const best = S.books.filter((x) => x.best).slice(0, 4);
+        return `<div class="stack">
+    <section>
+      <div class="banner"><div class="txt"><h2>${b[0]}</h2><p class="muted">${b[1]}</p><button class="btn primary sm" style="margin-top:10px" data-act="go" data-to="catalog">Belanja sekarang</button></div></div>
+      <div class="dots">${banners.map((_, i) => `<button aria-label="Banner ${i + 1}" data-act="banner" data-id="${i}" ${i === S.banner ? 'aria-current="true"' : ""}></button>`).join("")}</div>
+    </section>
+    <section><h3 style="margin-bottom:8px">Kategori</h3><div class="chips">${S.cats.map((c) => `<button class="chip" data-act="catfilter" data-cat="${esc(c.name)}">${esc(c.name)}</button>`).join("")}</div></section>
+    <section><div class="sec-head" style="margin-top:6px"><h2>Buku Terbaru</h2><button class="link" data-act="go" data-to="catalog">Lihat semua</button></div><div class="grid-books">${news.map((x) => card(x)).join("")}</div></section>
+    <section><div class="sec-head"><h2>Buku Terlaris</h2><button class="link" data-act="go" data-to="catalog">Lihat semua</button></div><div class="grid-books">${best.map((x, i) => card(x, i + 1)).join("")}</div></section>
+  </div>${tag("Beranda")}`;
+      }
+
+      function filtered() {
+        let r = S.books.filter((b) => {
+          const q = S.q.trim().toLowerCase();
+          return (
+            (!q ||
+              b.title.toLowerCase().includes(q) ||
+              b.author.toLowerCase().includes(q)) &&
+            (!S.cat || b.cat === S.cat) &&
+            (!S.onlyStock || b.stock > 0)
+          );
+        });
+        if (S.sort === "murah") r.sort((a, b) => a.price - b.price);
+        else if (S.sort === "mahal") r.sort((a, b) => b.price - a.price);
+        else if (S.sort === "judul")
+          r.sort((a, b) => a.title.localeCompare(b.title));
+        else r.sort((a, b) => b.year - a.year || b.id - a.id);
+        return r;
+      }
+      function catalogList() {
+        const r = filtered();
+        return (
+          `<p class="note" style="margin-bottom:10px">${r.length} buku ditemukan</p>` +
+          (r.length
+            ? `<div class="grid-books">${r.map((x) => card(x)).join("")}</div>`
+            : `<div class="empty"><h3>Tidak ada buku yang cocok</h3><p class="muted" style="margin:6px 0 12px">Coba kata kunci lain atau hapus filter.</p><button class="btn" data-act="reset">Hapus filter</button></div>`)
+        );
+      }
+      function scrCatalog() {
+        return `<h1 style="margin-bottom:14px">Katalog Buku</h1>
+  <div class="cat-layout">
+    <aside class="box stack" aria-label="Filter">
+      <div class="field"><label for="f-q">Judul / penulis</label><input id="f-q" data-filter="q" value="${esc(S.q)}" placeholder="Ketik kata kunci"></div>
+      <div class="field"><label for="f-cat">Kategori</label><select id="f-cat" data-filter="cat"><option value="">Semua kategori</option>${S.cats.map((c) => `<option ${S.cat === c.name ? "selected" : ""}>${esc(c.name)}</option>`).join("")}</select></div>
+      <div class="field"><label for="f-sort">Urutkan</label><select id="f-sort" data-filter="sort">${[
+        ["baru", "Terbaru"],
+        ["murah", "Harga terendah"],
+        ["mahal", "Harga tertinggi"],
+        ["judul", "Judul A-Z"],
+      ]
+        .map(
+          ([v, l]) =>
+            `<option value="${v}" ${S.sort === v ? "selected" : ""}>${l}</option>`,
+        )
+        .join("")}</select></div>
+      <label class="check"><input type="checkbox" id="f-stock" data-filter="onlyStock" ${S.onlyStock ? "checked" : ""}> Hanya yang tersedia</label>
+      <button class="btn sm" data-act="reset">Hapus filter</button>
+    </aside>
+    <section id="cat-results">${catalogList()}</section>
+  </div>${tag("Katalog + Pencarian & Filter")}`;
+      }
+
+      function scrDetail() {
+        const b = book(S.id);
+        if (!b) return scrCatalog();
+        const rel = S.books
+          .filter((x) => x.cat === b.cat && x.id !== b.id)
+          .slice(0, 4);
+        return `<p class="note" style="margin-bottom:10px"><button class="link" data-act="go" data-to="catalog">Katalog</button> / ${esc(b.cat)} / ${esc(b.title)}</p>
+  <div class="detail">
+    ${cover(b)}
+    <div class="stack">
+      <div><h1>${esc(b.title)}</h1><p class="muted">oleh ${esc(b.author)}</p></div>
+      <div class="price" style="font-size:24px">${fmt(b.price)}</div>
+      <dl class="meta">
+        <dt>PENULIS</dt><dd>${esc(b.author)}</dd>
+        <dt>PENERBIT</dt><dd>${esc(b.publisher)}</dd>
+        <dt>KATEGORI</dt><dd>${esc(b.cat)}</dd>
+        <dt>TERBIT</dt><dd>${b.year} · ${b.pages} halaman</dd>
+        <dt>STOK</dt><dd>${stockBadge(b)}</dd>
+      </dl>
+      <div class="wrapflex">
+        <div class="qty"><button aria-label="Kurangi" data-act="qty" data-d="-1">−</button><output>${S.qty}</output><button aria-label="Tambah" data-act="qty" data-d="1">+</button></div>
+        <button class="btn primary" data-act="add" data-id="${b.id}" data-qty="${S.qty}" ${b.stock === 0 ? "disabled" : ""}>Tambah ke keranjang</button>
+        <button class="btn" data-act="buy" data-id="${b.id}" ${b.stock === 0 ? "disabled" : ""}>Beli sekarang</button>
+      </div>
+      <div class="box dash"><h3 style="margin-bottom:6px">Sinopsis</h3><p>${esc(b.syn)}</p></div>
+    </div>
+  </div>
+  ${rel.length ? `<div class="sec-head"><h2>Buku serupa</h2></div><div class="grid-books">${rel.map((x) => card(x)).join("")}</div>` : ""}
+  ${tag("Detail Buku")}`;
+      }
+
+      function scrCart() {
+        if (!S.cart.length)
+          return `<h1 style="margin-bottom:14px">Keranjang</h1><div class="empty"><h3>Keranjang masih kosong</h3><p class="muted" style="margin:6px 0 12px">Tambahkan buku dari katalog.</p><button class="btn primary" data-act="go" data-to="catalog">Ke katalog</button></div>${tag("Keranjang Belanja (kosong)")}`;
+        return `<h1 style="margin-bottom:14px">Keranjang</h1>
+  <div class="two">
+    <div class="tblwrap"><table><thead><tr><th>Buku</th><th class="num">Harga</th><th>Jumlah</th><th class="num">Subtotal</th><th></th></tr></thead><tbody>
+    ${S.cart
+      .map((i) => {
+        const b = book(i.id);
+        return `<tr>
+      <td><div class="wrapflex" style="flex-wrap:nowrap">${cover(b, "mini")}<div><strong>${esc(b.title)}</strong><div class="muted">${esc(b.author)}</div></div></div></td>
+      <td class="num">${fmt(b.price)}</td>
+      <td><div class="qty"><button aria-label="Kurangi" data-act="cdec" data-id="${b.id}">−</button><output>${i.qty}</output><button aria-label="Tambah" data-act="cinc" data-id="${b.id}">+</button></div></td>
+      <td class="num">${fmt(b.price * i.qty)}</td>
+      <td><button class="link" data-act="crm" data-id="${b.id}">Hapus</button></td></tr>`;
+      })
+      .join("")}
+    </tbody></table></div>
+    <aside class="box">
+      <h3 style="margin-bottom:8px">Ringkasan</h3>
+      <div class="sum"><span>${cartCount()} barang</span><span class="price">${fmt(cartSub())}</span></div>
+      <div class="sum"><span class="muted">Ongkir dihitung di checkout</span><span></span></div>
+      <div class="sum total"><span>Subtotal</span><span>${fmt(cartSub())}</span></div>
+      <button class="btn primary" style="width:100%;margin-top:12px" data-act="checkout">Lanjut ke checkout</button>
+      <button class="btn" style="width:100%;margin-top:8px" data-act="go" data-to="catalog">Lanjut belanja</button>
+    </aside>
+  </div>${tag("Keranjang Belanja")}`;
+      }
+
+      const COURIERS = { JNE: 15000, "J&T": 18000, "Pos Indonesia": 12000 };
+      function scrCheckout() {
+        if (!S.cart.length) return scrCart();
+        const u = S.user || {};
+        return `<h1 style="margin-bottom:14px">Checkout</h1>
+  <form class="two" data-form="checkout">
+    <div class="stack">
+      <div class="box stack"><h3>Data penerima</h3>
+        <div class="row">
+          <div class="field"><label for="c-name">Nama lengkap</label><input id="c-name" name="name" required value="${esc(u.name)}"></div>
+          <div class="field"><label for="c-phone">No. telepon</label><input id="c-phone" name="phone" required value="${esc(u.phone)}"></div>
+        </div>
+        <div class="field"><label for="c-addr">Alamat lengkap</label><textarea id="c-addr" name="addr" required placeholder="Jalan, nomor, RT/RW, kelurahan"></textarea></div>
+        <div class="row">
+          <div class="field"><label for="c-city">Kota</label><input id="c-city" name="city" required value="${esc(u.city)}"></div>
+          <div class="field"><label for="c-zip">Kode pos</label><input id="c-zip" name="zip" required inputmode="numeric"></div>
+        </div>
+      </div>
+      <div class="box stack"><h3>Pengiriman</h3>
+        <div class="field"><label for="c-ship">Kurir</label><select id="c-ship" name="courier" data-act-change="ship">${Object.entries(
+          COURIERS,
+        )
+          .map(
+            ([k, v]) =>
+              `<option value="${esc(k)}">${esc(k)} · ${fmt(v)}</option>`,
+          )
+          .join("")}</select></div>
+      </div>
+      <div class="box stack"><h3>Pembayaran</h3>
+        <label class="radio"><input type="radio" name="pay" value="Transfer bank" checked> Transfer bank</label>
+        <label class="radio"><input type="radio" name="pay" value="COD"> Bayar di tempat (COD)</label>
+        <label class="radio"><input type="radio" name="pay" value="E-wallet"> E-wallet</label>
+      </div>
+    </div>
+    <aside class="box">
+      <h3 style="margin-bottom:8px">Pesanan Anda</h3>
+      ${S.cart
+        .map((i) => {
+          const b = book(i.id);
+          return `<div class="sum"><span>${esc(b.title)} × ${i.qty}</span><span>${fmt(b.price * i.qty)}</span></div>`;
+        })
+        .join("")}
+      <div class="sum"><span class="muted">Ongkir</span><span id="ship-val">${fmt(COURIERS.JNE)}</span></div>
+      <div class="sum total"><span>Total</span><span id="tot-val">${fmt(cartSub() + COURIERS.JNE)}</span></div>
+      <button class="btn primary" type="submit" style="width:100%;margin-top:12px">Buat pesanan</button>
+      <button class="btn" type="button" style="width:100%;margin-top:8px" data-act="go" data-to="cart">Kembali ke keranjang</button>
+    </aside>
+  </form>${tag("Checkout / Form Pemesanan")}`;
+      }
+      function scrSuccess() {
+        const o = S.orders.find((x) => x.id === S.lastOrder);
+        return `<div class="box authbox stack" style="text-align:center"><h1>Pesanan diterima</h1>
+    <p>Nomor pesanan <strong class="mono">${esc(S.lastOrder)}</strong></p>
+    <p class="muted">Total ${o ? fmt(orderTotal(o)) : ""}. Status awal: Diproses.</p>
+    <div class="wrapflex" style="justify-content:center"><button class="btn primary" data-act="go" data-to="orders">Lihat riwayat pesanan</button><button class="btn" data-act="go" data-to="home">Kembali ke beranda</button></div></div>${tag("Konfirmasi Pesanan")}`;
+      }
+
+      function scrLogin() {
+        return `<div class="box authbox stack"><h1>Masuk</h1>
+    ${S.redirect === "checkout" ? '<p class="note">Masuk dulu untuk menyelesaikan pesanan.</p>' : ""}
+    <form class="stack" data-form="login">
+      <div class="field"><label for="l-mail">Email</label><input id="l-mail" name="email" type="email" required value="sari@contoh.id"></div>
+      <div class="field"><label for="l-pass">Kata sandi</label><input id="l-pass" name="pass" type="password" required value="rahasia123"></div>
+      <button class="btn primary" type="submit">Masuk</button>
+    </form>
+    <p class="muted">Belum punya akun? <button class="link" data-act="go" data-to="register">Daftar</button></p>
+    <p class="note">Prototipe: data masuk sudah terisi, cukup klik Masuk.</p></div>${tag("Login Pelanggan")}`;
+      }
+      function scrRegister() {
+        return `<div class="box authbox stack"><h1>Daftar akun</h1>
+    <form class="stack" data-form="register">
+      <div class="field"><label for="r-name">Nama lengkap</label><input id="r-name" name="name" required></div>
+      <div class="field"><label for="r-mail">Email</label><input id="r-mail" name="email" type="email" required></div>
+      <div class="field"><label for="r-phone">No. telepon</label><input id="r-phone" name="phone" required></div>
+      <div class="field"><label for="r-pass">Kata sandi</label><input id="r-pass" name="pass" type="password" minlength="6" required></div>
+      <button class="btn primary" type="submit">Buat akun</button>
+    </form>
+    <p class="muted">Sudah punya akun? <button class="link" data-act="go" data-to="login">Masuk</button></p></div>${tag("Registrasi Pelanggan")}`;
+      }
+
+      function scrOrders() {
+        if (!S.user) return scrLogin();
+        const mine = S.orders
+          .filter((o) => o.cust === S.user.id)
+          .slice()
+          .reverse();
+        return (
+          `<h1 style="margin-bottom:14px">Riwayat Pesanan</h1>` +
+          (mine.length
+            ? `<div class="stack">${mine
+                .map(
+                  (o) => `
+    <div class="box">
+      <div class="between"><div><strong class="mono">${o.id}</strong> <span class="muted">· ${o.date}</span></div><span class="badge b-${o.status}">${o.status}</span></div>
+      <div style="margin:10px 0">${o.items.map((i) => `<div class="sum"><span>${esc(bookTitle(i.id))} × ${i.qty}</span><span>${fmt((book(i.id)?.price || 0) * i.qty)}</span></div>`).join("")}
+      <div class="sum"><span class="muted">Ongkir</span><span>${fmt(o.ship)}</span></div>
+      <div class="sum total"><span>Total</span><span>${fmt(orderTotal(o))}</span></div></div>
+    </div>`,
+                )
+                .join("")}</div>`
+            : `<div class="empty"><h3>Belum ada pesanan</h3><button class="btn primary" style="margin-top:10px" data-act="go" data-to="catalog">Mulai belanja</button></div>`) +
+          tag("Riwayat Pesanan")
+        );
+      }
+
+      function scrContact() {
+        return `<div class="two">
+    <div class="stack"><h1>Tentang Pustaka Kita</h1>
+      <div class="box dash muted" style="min-height:140px;display:grid;place-items:center">[ Foto toko ]</div>
+      <p>Pustaka Kita adalah toko buku independen yang menjual buku fiksi, anak, teknologi, kuliner, sejarah, dan bisnis. Pesanan dikemas dalam 1×24 jam dan dikirim lewat kurir pilihan Anda.</p>
+      <dl class="meta box"><dt>ALAMAT</dt><dd>Jl. Pustaka No. 12, Bandung</dd><dt>JAM BUKA</dt><dd>Senin–Sabtu, 09.00–18.00</dd><dt>TELEPON</dt><dd>022-1234-5678</dd><dt>EMAIL</dt><dd>halo@pustakakita.example</dd></dl>
+    </div>
+    <form class="box stack" data-form="contact"><h3>Kirim pesan</h3>
+      <div class="field"><label for="k-name">Nama</label><input id="k-name" required></div>
+      <div class="field"><label for="k-mail">Email</label><input id="k-mail" type="email" required></div>
+      <div class="field"><label for="k-msg">Pesan</label><textarea id="k-msg" required></textarea></div>
+      <button class="btn primary" type="submit">Kirim</button>
+    </form></div>${tag("Kontak & Tentang Toko")}`;
+      }
+
+      function custShell() {
+        const m =
+          {
+            home: scrHome,
+            catalog: scrCatalog,
+            detail: scrDetail,
+            cart: scrCart,
+            checkout: scrCheckout,
+            success: scrSuccess,
+            login: scrLogin,
+            register: scrRegister,
+            orders: scrOrders,
+            contact: scrContact,
+          }[S.screen] || scrHome;
+        return `<div class="shell">${custHeader()}<main>${m()}</main></div>`;
+      }
+
+      /* ---------- Admin ---------- */
+      function scrAdmLogin() {
+        return `<div class="box authbox stack"><h1>Login Admin</h1>
+    <form class="stack" data-form="adminLogin">
+      <div class="field"><label for="a-user">Username</label><input id="a-user" required value="admin"></div>
+      <div class="field"><label for="a-pass">Kata sandi</label><input id="a-pass" type="password" required value="admin123"></div>
+      <button class="btn primary" type="submit">Masuk</button>
+    </form><p class="note">Prototipe: data masuk sudah terisi.</p></div>${tag("Login Admin")}`;
+      }
+      function admDash() {
+        const rev = S.orders.reduce((s, o) => s + orderTotal(o), 0);
+        const low = S.books.filter((b) => b.stock <= 5);
+        return `<div class="stack"><h1>Dashboard</h1>
+    <div class="stats">
+      <div class="stat"><div class="k">Jumlah buku</div><div class="v">${S.books.length}</div></div>
+      <div class="stat"><div class="k">Jumlah pesanan</div><div class="v">${S.orders.length}</div></div>
+      <div class="stat"><div class="k">Pendapatan</div><div class="v" style="font-size:26px;padding-top:6px">${fmt(rev)}</div></div>
+      <div class="stat"><div class="k">Perlu diproses</div><div class="v">${S.orders.filter((o) => o.status === "Diproses").length}</div></div>
+    </div>
+    <div class="two">
+      <div><h3 style="margin-bottom:8px">Pesanan terbaru</h3><div class="tblwrap"><table><thead><tr><th>No.</th><th>Pelanggan</th><th class="num">Total</th><th>Status</th></tr></thead><tbody>
+        ${S.orders
+          .slice(-4)
+          .reverse()
+          .map(
+            (o) =>
+              `<tr><td class="mono">${o.id}</td><td>${esc(cust(o.cust)?.name)}</td><td class="num">${fmt(orderTotal(o))}</td><td><span class="badge b-${o.status}">${o.status}</span></td></tr>`,
+          )
+          .join("")}
+      </tbody></table></div></div>
+      <div><h3 style="margin-bottom:8px">Stok menipis</h3><div class="tblwrap"><table style="min-width:0"><thead><tr><th>Buku</th><th class="num">Stok</th></tr></thead><tbody>
+        ${low.map((b) => `<tr><td>${esc(b.title)}</td><td class="num">${stockBadge(b)}</td></tr>`).join("") || '<tr><td colspan="2" class="muted">Semua stok aman.</td></tr>'}
+      </tbody></table></div></div>
+    </div>${tag("Dashboard Admin")}</div>`;
+      }
+      function bookForm() {
+        const b =
+          S.editBook === "new"
+            ? {
+                title: "",
+                author: "",
+                publisher: "",
+                cat: S.cats[0]?.name,
+                price: "",
+                stock: "",
+                syn: "",
+              }
+            : book(S.editBook);
+        return `<form class="box stack" data-form="bookForm"><h3>${S.editBook === "new" ? "Tambah buku" : "Ubah buku"}</h3>
+    <div class="row">
+      <div class="field"><label for="b-title">Judul</label><input id="b-title" name="title" required value="${esc(b.title)}"></div>
+      <div class="field"><label for="b-author">Penulis</label><input id="b-author" name="author" required value="${esc(b.author)}"></div>
+      <div class="field"><label for="b-pub">Penerbit</label><input id="b-pub" name="publisher" required value="${esc(b.publisher)}"></div>
+    </div>
+    <div class="row">
+      <div class="field"><label for="b-cat">Kategori</label><select id="b-cat" name="cat">${S.cats.map((c) => `<option ${b.cat === c.name ? "selected" : ""}>${esc(c.name)}</option>`).join("")}</select></div>
+      <div class="field"><label for="b-price">Harga (Rp)</label><input id="b-price" name="price" type="number" min="0" required value="${esc(b.price)}"></div>
+      <div class="field"><label for="b-stock">Stok</label><input id="b-stock" name="stock" type="number" min="0" required value="${esc(b.stock)}"></div>
+    </div>
+    <div class="field"><label for="b-syn">Sinopsis</label><textarea id="b-syn" name="syn">${esc(b.syn)}</textarea></div>
+    <div class="field"><label>Sampul</label><div class="box dash note" style="padding:10px">[ Unggah gambar sampul ]</div></div>
+    <div class="wrapflex"><button class="btn primary" type="submit">Simpan</button><button class="btn" type="button" data-act="bookCancel">Batal</button></div>
+  </form>`;
+      }
+      function admBooks() {
+        const q = S.bookQ.toLowerCase();
+        const rows = S.books.filter(
+          (b) =>
+            !q ||
+            b.title.toLowerCase().includes(q) ||
+            b.author.toLowerCase().includes(q),
+        );
+        return `<div class="stack"><div class="between"><h1>Kelola Buku</h1><button class="btn primary" data-act="bookNew">+ Tambah buku</button></div>
+    ${S.editBook !== null ? bookForm() : ""}
+    <input id="bk-q" data-filter="bookQ" placeholder="Cari judul atau penulis" aria-label="Cari buku" value="${esc(S.bookQ)}" style="max-width:340px">
+    <div class="tblwrap" id="bk-table"><table><thead><tr><th></th><th>Judul</th><th>Penulis</th><th>Kategori</th><th class="num">Harga</th><th class="num">Stok</th><th>Aksi</th></tr></thead><tbody>
+    ${
+      rows
+        .map(
+          (
+            b,
+          ) => `<tr><td>${cover(b, "mini")}</td><td><strong>${esc(b.title)}</strong></td><td>${esc(b.author)}</td><td>${esc(b.cat)}</td><td class="num">${fmt(b.price)}</td><td class="num">${b.stock}</td>
+      <td>${
+        S.delBook === b.id
+          ? `<div class="wrapflex"><span>Hapus?</span><button class="btn sm danger" data-act="bookDelYes" data-id="${b.id}">Ya</button><button class="btn sm" data-act="bookDelNo">Batal</button></div>`
+          : `<div class="wrapflex"><button class="btn sm" data-act="bookEdit" data-id="${b.id}">Ubah</button><button class="btn sm danger" data-act="bookDel" data-id="${b.id}">Hapus</button></div>`
+      }</td></tr>`,
+        )
+        .join("") ||
+      '<tr><td colspan="7" class="muted">Tidak ada buku.</td></tr>'
+    }
+    </tbody></table></div>${tag("Kelola Data Buku (CRUD)")}</div>`;
+      }
+      function admCats() {
+        return `<div class="stack"><h1>Kelola Kategori</h1>
+    <form class="wrapflex" data-form="catAdd"><input id="cat-new" name="name" placeholder="Nama kategori baru" required style="max-width:300px"><button class="btn primary" type="submit">+ Tambah</button></form>
+    <div class="tblwrap"><table style="min-width:0"><thead><tr><th>Nama kategori</th><th class="num">Jumlah buku</th><th>Aksi</th></tr></thead><tbody>
+    ${S.cats
+      .map((c) => {
+        const n = S.books.filter((b) => b.cat === c.name).length;
+        return S.editCat === c.id
+          ? `<tr><td colspan="3"><form class="wrapflex" data-form="catEdit" data-id="${c.id}"><input id="cat-edit" name="name" value="${esc(c.name)}" required style="max-width:280px"><button class="btn sm primary" type="submit">Simpan</button><button class="btn sm" type="button" data-act="catCancel">Batal</button></form></td></tr>`
+          : `<tr><td>${esc(c.name)}</td><td class="num">${n}</td><td><div class="wrapflex"><button class="btn sm" data-act="catEdit" data-id="${c.id}">Ubah</button><button class="btn sm danger" data-act="catDel" data-id="${c.id}">Hapus</button></div></td></tr>`;
+      })
+      .join("")}
+    </tbody></table></div><p class="note">Kategori yang masih dipakai buku tidak bisa dihapus.</p>${tag("Kelola Kategori (CRUD)")}</div>`;
+      }
+      function admOrders() {
+        const tabs = ["Semua", ...STATUS];
+        const rows = S.orders
+          .filter((o) => S.ordTab === "Semua" || o.status === S.ordTab)
+          .slice()
+          .reverse();
+        return `<div class="stack"><h1>Kelola Pesanan</h1>
+    <div class="tabs" role="group" aria-label="Filter status">${tabs.map((t) => `<button data-act="ordTab" data-tab="${t}" aria-pressed="${S.ordTab === t}">${t}${t === "Semua" ? "" : " (" + S.orders.filter((o) => o.status === t).length + ")"}</button>`).join("")}</div>
+    <div class="tblwrap"><table><thead><tr><th>No.</th><th>Tanggal</th><th>Pelanggan</th><th>Isi pesanan</th><th class="num">Total</th><th>Status</th></tr></thead><tbody>
+    ${
+      rows
+        .map(
+          (
+            o,
+          ) => `<tr><td class="mono">${o.id}</td><td>${o.date}</td><td>${esc(cust(o.cust)?.name)}</td><td>${o.items.map((i) => esc(bookTitle(i.id)) + " ×" + i.qty).join("<br>")}</td><td class="num">${fmt(orderTotal(o))}</td>
+      <td><select aria-label="Status ${o.id}" data-ordstatus="${o.id}" style="min-width:120px">${STATUS.map((s) => `<option ${o.status === s ? "selected" : ""}>${s}</option>`).join("")}</select></td></tr>`,
+        )
+        .join("") ||
+      '<tr><td colspan="6" class="muted">Tidak ada pesanan.</td></tr>'
+    }
+    </tbody></table></div>${tag("Kelola Pesanan (ubah status)")}</div>`;
+      }
+      function admCusts() {
+        const v = S.custView ? cust(S.custView) : null;
+        return `<div class="stack"><h1>Kelola Pelanggan</h1>
+    <div class="tblwrap"><table><thead><tr><th>Nama</th><th>Email</th><th>Kota</th><th class="num">Pesanan</th><th class="num">Total belanja</th><th>Status</th><th>Aksi</th></tr></thead><tbody>
+    ${S.customers
+      .map((c) => {
+        const os = S.orders.filter((o) => o.cust === c.id);
+        return `<tr><td><strong>${esc(c.name)}</strong></td><td>${esc(c.email)}</td><td>${esc(c.city)}</td><td class="num">${os.length}</td><td class="num">${fmt(os.reduce((s, o) => s + orderTotal(o), 0))}</td>
+      <td><span class="badge b-${c.active ? "Aktif" : "Nonaktif"}">${c.active ? "Aktif" : "Nonaktif"}</span></td>
+      <td><div class="wrapflex"><button class="btn sm" data-act="custView" data-id="${c.id}">Detail</button><button class="btn sm" data-act="custToggle" data-id="${c.id}">${c.active ? "Nonaktifkan" : "Aktifkan"}</button></div></td></tr>`;
+      })
+      .join("")}
+    </tbody></table></div>
+    ${
+      v
+        ? `<div class="box stack"><div class="between"><h3>${esc(v.name)}</h3><button class="link" data-act="custView" data-id="0">Tutup</button></div>
+      <dl class="meta"><dt>EMAIL</dt><dd>${esc(v.email)}</dd><dt>TELEPON</dt><dd>${esc(v.phone)}</dd><dt>KOTA</dt><dd>${esc(v.city)}</dd></dl>
+      <div><strong>Riwayat pesanan</strong>${
+        S.orders
+          .filter((o) => o.cust === v.id)
+          .map(
+            (o) =>
+              `<div class="sum"><span class="mono">${o.id} · ${o.date}</span><span><span class="badge b-${o.status}">${o.status}</span> ${fmt(orderTotal(o))}</span></div>`,
+          )
+          .join("") || '<p class="muted">Belum ada pesanan.</p>'
+      }</div></div>`
+        : ""
+    }
+    ${tag("Kelola Data Pelanggan")}</div>`;
+      }
+      function adminShell() {
+        if (!S.admin) return `<div class="shell">${scrAdmLogin()}</div>`;
+        const items = [
+          ["dash", "Dashboard"],
+          ["books", "Buku"],
+          ["cats", "Kategori"],
+          ["orders", "Pesanan"],
+          ["custs", "Pelanggan"],
+        ];
+        const m = {
+          dash: admDash,
+          books: admBooks,
+          cats: admCats,
+          orders: admOrders,
+          custs: admCusts,
+        }[S.admScreen];
+        return `<div class="shell admin"><nav class="side" aria-label="Menu admin"><div class="brand">Pustaka Kita<div class="note">Admin</div></div>
+    ${items.map(([k, l]) => `<button data-act="admGo" data-to="${k}" ${S.admScreen === k ? 'aria-current="page"' : ""}>${l}</button>`).join("")}
+    <button data-act="admLogout" style="margin-top:8px;color:var(--warn)">Keluar</button></nav><main>${m()}</main></div>`;
+      }
+
+      /* ---------- Render & event ---------- */
+      function render() {
+        const keep = document.activeElement?.id;
+        $("#app").innerHTML =
+          `<div class="proto"><span>PROTOTIPE LOW-FI · PUSTAKA KITA · data contoh</span>
+    <div class="seg" role="group" aria-label="Pilih tampilan"><button data-act="mode" data-m="cust" aria-pressed="${S.mode === "cust"}">Pelanggan</button><button data-act="mode" data-m="admin" aria-pressed="${S.mode === "admin"}">Admin</button></div></div>
+    ${S.mode === "cust" ? custShell() : adminShell()}${S.toast ? `<div class="toast" role="status">${esc(S.toast)}</div>` : ""}`;
+        if (keep) {
+          const el = document.getElementById(keep);
+          if (el && el.focus) {
+            el.focus();
+            try {
+              const l = el.value.length;
+              el.setSelectionRange(l, l);
+            } catch (e) {}
+          }
+        }
+      }
+      function addToCart(id, n = 1) {
+        const b = book(id);
+        if (!b || b.stock === 0) return;
+        const it = S.cart.find((i) => i.id === id);
+        if (it) it.qty = Math.min(b.stock, it.qty + n);
+        else S.cart.push({ id, qty: Math.min(b.stock, n) });
+      }
+      function afterLogin() {
+        const r = S.redirect;
+        S.redirect = null;
+        go(r || "home");
+      }
+
+      document.addEventListener("click", (e) => {
+        const el = e.target.closest("[data-act]");
+        if (!el) return;
+        const a = el.dataset.act,
+          id = Number(el.dataset.id);
+        switch (a) {
+          case "mode":
+            S.mode = el.dataset.m;
+            render();
+            break;
+          case "go":
+            go(el.dataset.to);
+            break;
+          case "detail":
+            go("detail", id);
+            break;
+          case "banner":
+            S.banner = id;
+            render();
+            break;
+          case "catfilter":
+            S.cat = el.dataset.cat;
+            S.q = "";
+            go("catalog");
+            break;
+          case "reset":
+            S.q = "";
+            S.cat = "";
+            S.sort = "baru";
+            S.onlyStock = false;
+            render();
+            break;
+          case "qty":
+            S.qty = Math.max(1, S.qty + Number(el.dataset.d));
+            render();
+            break;
+          case "add":
+            addToCart(id, Number(el.dataset.qty) || 1);
+            toast("Ditambahkan ke keranjang");
+            break;
+          case "buy":
+            addToCart(id, S.qty);
+            go("cart");
+            break;
+          case "cinc":
+            addToCart(id, 1);
+            render();
+            break;
+          case "cdec": {
+            const it = S.cart.find((i) => i.id === id);
+            if (it) {
+              it.qty--;
+              if (it.qty < 1) S.cart = S.cart.filter((i) => i !== it);
+            }
+            render();
+            break;
+          }
+          case "crm":
+            S.cart = S.cart.filter((i) => i.id !== id);
+            render();
+            break;
+          case "checkout":
+            if (!S.user) {
+              S.redirect = "checkout";
+              go("login");
+            } else go("checkout");
+            break;
+          case "logout":
+            S.user = null;
+            go("home");
+            break;
+          /* admin */
+          case "admGo":
+            S.admScreen = el.dataset.to;
+            S.editBook = null;
+            S.delBook = null;
+            S.editCat = null;
+            render();
+            break;
+          case "admLogout":
+            S.admin = false;
+            render();
+            break;
+          case "bookNew":
+            S.editBook = "new";
+            render();
+            window.scrollTo(0, 0);
+            break;
+          case "bookEdit":
+            S.editBook = id;
+            render();
+            window.scrollTo(0, 0);
+            break;
+          case "bookCancel":
+            S.editBook = null;
+            render();
+            break;
+          case "bookDel":
+            S.delBook = id;
+            render();
+            break;
+          case "bookDelNo":
+            S.delBook = null;
+            render();
+            break;
+          case "bookDelYes":
+            if (S.orders.some((o) => o.items.some((i) => i.id === id))) {
+              S.delBook = null;
+              toast("Tidak bisa dihapus: buku ada di riwayat pesanan");
+              break;
+            }
+            S.books = S.books.filter((b) => b.id !== id);
+            S.cart = S.cart.filter((i) => i.id !== id);
+            S.delBook = null;
+            toast("Buku dihapus");
+            break;
+          case "catEdit":
+            S.editCat = id;
+            render();
+            break;
+          case "catCancel":
+            S.editCat = null;
+            render();
+            break;
+          case "catDel": {
+            const c = S.cats.find((x) => x.id === id);
+            const n = S.books.filter((b) => b.cat === c.name).length;
+            if (n) toast(`Tidak bisa dihapus: dipakai ${n} buku`);
+            else {
+              S.cats = S.cats.filter((x) => x.id !== id);
+              toast("Kategori dihapus");
+            }
+            break;
+          }
+          case "ordTab":
+            S.ordTab = el.dataset.tab;
+            render();
+            break;
+          case "custView":
+            S.custView = id || null;
+            render();
+            break;
+          case "custToggle": {
+            const c = cust(id);
+            c.active = !c.active;
+            render();
+            break;
+          }
+        }
+      });
+      document.addEventListener("keydown", (e) => {
+        if ((e.key === "Enter" || e.key === " ") && e.target.matches(".card")) {
+          e.preventDefault();
+          go("detail", Number(e.target.dataset.id));
+        }
+      });
+
+      document.addEventListener("input", (e) => {
+        const f = e.target.dataset.filter;
+        if (!f) return;
+        const v =
+          e.target.type === "checkbox" ? e.target.checked : e.target.value;
+        if (f === "bookQ") {
+          S.bookQ = v;
+          render();
+          return;
+        }
+        S[f] = v;
+        const r = $("#cat-results");
+        if (r) r.innerHTML = catalogList();
+      });
+      document.addEventListener("change", (e) => {
+        const t = e.target;
+        if (t.dataset.ordstatus) {
+          const o = S.orders.find((x) => x.id === t.dataset.ordstatus);
+          o.status = t.value;
+          toast(`${o.id} → ${o.status}`);
+          return;
+        }
+        if (t.dataset.actChange === "ship") {
+          const s = COURIERS[t.value];
+          $("#ship-val").textContent = fmt(s);
+          $("#tot-val").textContent = fmt(cartSub() + s);
+          return;
+        }
+        if (t.dataset.filter)
+          t.dispatchEvent(new Event("input", { bubbles: true }));
+      });
+
+      document.addEventListener("submit", (e) => {
+        const form = e.target.closest("form[data-form]");
+        if (!form) return;
+        e.preventDefault();
+        const d = Object.fromEntries(new FormData(form));
+        switch (form.dataset.form) {
+          case "search":
+            S.q = $("#hdr-q").value;
+            S.cat = "";
+            go("catalog");
+            break;
+          case "login":
+            S.user =
+              S.customers.find((c) => c.email === d.email) || S.customers[0];
+            afterLogin();
+            break;
+          case "register": {
+            const c = {
+              id: Math.max(...S.customers.map((x) => x.id)) + 1,
+              name: d.name,
+              email: d.email,
+              phone: d.phone,
+              city: "",
+              active: true,
+            };
+            S.customers.push(c);
+            S.user = c;
+            afterLogin();
+            break;
+          }
+          case "checkout": {
+            const n = S.orders.length
+              ? Math.max(...S.orders.map((o) => Number(o.id.split("-")[1]))) + 1
+              : 1001;
+            const o = {
+              id: "PK-" + n,
+              cust: S.user.id,
+              items: S.cart.map((i) => ({ ...i })),
+              ship: COURIERS[d.courier],
+              status: "Diproses",
+              date: "4 Nov 2026",
+            };
+            o.items.forEach((i) => {
+              const b = book(i.id);
+              b.stock = Math.max(0, b.stock - i.qty);
+            });
+            S.orders.push(o);
+            S.cart = [];
+            S.lastOrder = o.id;
+            go("success");
+            break;
+          }
+          case "contact":
+            form.reset();
+            toast("Pesan terkirim (contoh)");
+            break;
+          case "adminLogin":
+            S.admin = true;
+            S.admScreen = "dash";
+            render();
+            break;
+          case "bookForm": {
+            const p = {
+              title: d.title,
+              author: d.author,
+              publisher: d.publisher,
+              cat: d.cat,
+              price: Number(d.price),
+              stock: Number(d.stock),
+              syn: d.syn,
+            };
+            if (S.editBook === "new")
+              S.books.push({
+                id: Math.max(0, ...S.books.map((b) => b.id)) + 1,
+                year: 2026,
+                pages: 0,
+                isNew: true,
+                best: false,
+                ...p,
+              });
+            else Object.assign(book(S.editBook), p);
+            S.editBook = null;
+            toast("Buku disimpan");
+            break;
+          }
+          case "catAdd": {
+            const name = d.name.trim();
+            if (
+              S.cats.some((c) => c.name.toLowerCase() === name.toLowerCase())
+            ) {
+              toast("Kategori sudah ada");
+              break;
+            }
+            S.cats.push({
+              id: Math.max(0, ...S.cats.map((c) => c.id)) + 1,
+              name,
+            });
+            toast("Kategori ditambahkan");
+            break;
+          }
+          case "catEdit": {
+            const c = S.cats.find((x) => x.id === Number(form.dataset.id));
+            const old = c.name;
+            c.name = d.name.trim();
+            S.books.forEach((b) => {
+              if (b.cat === old) b.cat = c.name;
+            });
+            S.editCat = null;
+            toast("Kategori diperbarui");
+            break;
+          }
+        }
+      });
+      render();
+    </script>
+  </body>
+</html>
