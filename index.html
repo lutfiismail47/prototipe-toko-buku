@@ -1204,7 +1204,7 @@
         ];
         const cur = S.screen === "detail" ? "catalog" : S.screen;
         return `<header class="top">
-    <button class="logo" data-act="go" data-to="home"><em>PK</em>Pustaka Ilmu</button>
+    <button class="logo" data-act="go" data-to="home"><em>Logo</em>Pustaka Ilmu</button>
     <nav class="nav" aria-label="Menu utama">${nav.map(([k, l]) => `<button data-act="go" data-to="${k}" ${cur === k ? 'aria-current="page"' : ""}>${l}</button>`).join("")}</nav>
     <form class="search" data-form="search" role="search">
       <input id="hdr-q" aria-label="Cari buku" placeholder="Cari judul atau penulis" value="${esc(S.q)}">
