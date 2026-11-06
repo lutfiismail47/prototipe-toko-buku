@@ -35,7 +35,7 @@
     </style>
   </head>
   <body>
-    <title>Pustaka Kita Prototipe</title>
+    <title>Pustaka Ilmu Prototipe</title>
     <meta name="claude:viewport-fit-sides" content="cover" />
     <link
       rel="stylesheet"
@@ -1204,7 +1204,7 @@
         ];
         const cur = S.screen === "detail" ? "catalog" : S.screen;
         return `<header class="top">
-    <button class="logo" data-act="go" data-to="home"><em>PK</em>Pustaka Kita</button>
+    <button class="logo" data-act="go" data-to="home"><em>PK</em>Pustaka Ilmu</button>
     <nav class="nav" aria-label="Menu utama">${nav.map(([k, l]) => `<button data-act="go" data-to="${k}" ${cur === k ? 'aria-current="page"' : ""}>${l}</button>`).join("")}</nav>
     <form class="search" data-form="search" role="search">
       <input id="hdr-q" aria-label="Cari buku" placeholder="Cari judul atau penulis" value="${esc(S.q)}">
@@ -1459,9 +1459,9 @@
 
       function scrContact() {
         return `<div class="two">
-    <div class="stack"><h1>Tentang Pustaka Kita</h1>
+    <div class="stack"><h1>Tentang Pustaka Ilmu</h1>
       <div class="box dash muted" style="min-height:140px;display:grid;place-items:center">[ Foto toko ]</div>
-      <p>Pustaka Kita adalah toko buku independen yang menjual buku fiksi, anak, teknologi, kuliner, sejarah, dan bisnis. Pesanan dikemas dalam 1×24 jam dan dikirim lewat kurir pilihan Anda.</p>
+      <p>Pustaka Ilmu adalah toko buku independen yang menjual buku fiksi, anak, teknologi, kuliner, sejarah, dan bisnis. Pesanan dikemas dalam 1×24 jam dan dikirim lewat kurir pilihan Anda.</p>
       <dl class="meta box"><dt>ALAMAT</dt><dd>Jl. Pustaka No. 12, Bandung</dd><dt>JAM BUKA</dt><dd>Senin–Sabtu, 09.00–18.00</dd><dt>TELEPON</dt><dd>022-1234-5678</dd><dt>EMAIL</dt><dd>halo@pustakakita.example</dd></dl>
     </div>
     <form class="box stack" data-form="contact"><h3>Kirim pesan</h3>
@@ -1664,7 +1664,7 @@
           orders: admOrders,
           custs: admCusts,
         }[S.admScreen];
-        return `<div class="shell admin"><nav class="side" aria-label="Menu admin"><div class="brand">Pustaka Kita<div class="note">Admin</div></div>
+        return `<div class="shell admin"><nav class="side" aria-label="Menu admin"><div class="brand">Pustaka Ilmu<div class="note">Admin</div></div>
     ${items.map(([k, l]) => `<button data-act="admGo" data-to="${k}" ${S.admScreen === k ? 'aria-current="page"' : ""}>${l}</button>`).join("")}
     <button data-act="admLogout" style="margin-top:8px;color:var(--warn)">Keluar</button></nav><main>${m()}</main></div>`;
       }
@@ -1673,7 +1673,7 @@
       function render() {
         const keep = document.activeElement?.id;
         $("#app").innerHTML =
-          `<div class="proto"><span>PROTOTIPE LOW-FI · PUSTAKA KITA · data contoh</span>
+          `<div class="proto"><span>PROTOTIPE LOW-FI · Pustaka Ilmu · data contoh</span>
     <div class="seg" role="group" aria-label="Pilih tampilan"><button data-act="mode" data-m="cust" aria-pressed="${S.mode === "cust"}">Pelanggan</button><button data-act="mode" data-m="admin" aria-pressed="${S.mode === "admin"}">Admin</button></div></div>
     ${S.mode === "cust" ? custShell() : adminShell()}${S.toast ? `<div class="toast" role="status">${esc(S.toast)}</div>` : ""}`;
         if (keep) {
